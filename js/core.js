@@ -15,6 +15,8 @@ var Game = function(images, runner) {
         mouseControl: true,
         keyboardControl: true,
         load: true,
+        clickFunctions: {},
+        cursorChanger: {},
     }
     var canvas = document.getElementById('viewer');
     var context = canvas.getContext('2d');
@@ -31,26 +33,53 @@ var Game = function(images, runner) {
             loads.push(1);
             if (loads.length == names.length) {
                 o.load = false;
-                runner();
+                o.startMenu();
             }
         }
     }
     //Loading Scene
     o.loading = function() {
-        canvas.height = canvas.height;
-        context.font = "30px Courier";
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
-        context.fillStyle = "#0000ff";
-        context.fillText("Loading... " + Math.floor(loads.length / names.length * 100) + "%", canvas.width / 2, canvas.height / 2 - 15);
-        context.fillText("Please Wait", canvas.width / 2, canvas.height / 2 + 15);
         if (o.load) {
+            canvas.height = canvas.height;
+            context.font = "30px Courier";
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillStyle = "#0000ff";
+            context.fillText("Loading... " + Math.floor(loads.length / names.length * 100) + "%", canvas.width / 2, canvas.height / 2 - 15);
+            context.fillText("Please Wait", canvas.width / 2, canvas.height / 2 + 15);
             setTimeout(function() {
                 o.loading();
             }, 1000 / 10)
         }
     }
     o.loading();
+    //Start Scene
+    o.startMenu = function() {
+        canvas.height = canvas.height;
+        var menuback = SImage(o.images["bg"]);
+        var menuground = SImage(o.images["ground"]);
+        var menubird = SImage(o.images["birdfly"]);
+        menuground.y = canvas.height - menuground.height / 2;
+        menubird.x = canvas.width / 2 - menubird.width / 2;
+        menubird.y = canvas.height / 2 - menubird.height / 2;
+        var start = SImage(o.images["start"]);
+        start.x = canvas.width / 2 - start.width / 2;
+        start.y = canvas.height / 1.5;
+        var logo = SImage(o.images["logo"]);
+        logo.x = canvas.width / 2 - logo.width / 2;
+        logo.y = canvas.height / 5;
+        o.draw(menuback);
+        o.draw(menuground);
+        o.draw(start);
+        o.draw(logo);
+        o.draw(menubird);
+        o.enableChangeCursor(start, "pointer");
+        o.enableClick(start, function() {
+            o.disableClick(start);
+            o.disableChangeCursor(start);
+            runner();
+        });
+    }
     //set background
     o.setBackground = function(image) {
         o.bg = SImage(image);
@@ -109,21 +138,83 @@ var Game = function(images, runner) {
     }
     //Update score
     o.updateScore = function() {
+        var py = 5;
         if (window.over) {
             o.end();
-            var string = "Game Over~";
-            canvas.height = canvas.height;
-            context.font = "30px Courier";
-            context.textAlign = 'center';
-            context.textBaseline = 'middle';
-            context.fillStyle = "#0000ff";
-            context.fillText(string, canvas.width / 2, canvas.height / 2 - 15);
-            context.fillText("Score: " + window.score, canvas.width / 2, canvas.height / 2 + 15);
-            return;
+            py = canvas.height / 2 - 18;
+            var overBanner = SImage(o.images["over"]);
+            overBanner.x = canvas.width / 2 - overBanner.width / 2;
+            overBanner.y = canvas.height / 2 - 25 - overBanner.height;
+            o.draw(overBanner);
+            var start = SImage(o.images["start"]);
+            start.x = canvas.width / 2 - start.width / 2;
+            start.y = canvas.height / 1.5;
+            o.draw(start);
+            var logo = SImage(o.images["logo"]);
+            logo.x = canvas.width / 2 - logo.width / 2;
+            logo.y = canvas.height / 5;
+            o.draw(logo);
+            o.enableChangeCursor(start, "pointer");
+            o.enableClick(start, function() {
+                o.disableClick(start);
+                o.disableChangeCursor(start);
+                o.running = o.runningTemp;
+                runner();
+            });
         }
-        context.strokeStyle = "#0000ff";
-        context.font = "10px Courier";
-        context.strokeText("Score: " + window.score, 5, canvas.height - 5);
+        var temp = window.score;
+        var bits = [];
+        while (temp != 0) {
+            bits.push(temp % 10);
+            temp = Math.floor(temp / 10);
+        }
+        if (bits.length == 0) {
+            var abit = SImage(o.images["s0"]);
+            abit.x = canvas.width / 2 - abit.width / 2;
+            abit.y = py;
+            o.draw(abit);
+        } else {
+            var px = canvas.width / 2 - 24 * bits.length / 2
+            for (var i = bits.length - 1; i >= 0; i--) {
+                var abit;
+                switch (bits[i]) {
+                    case 0:
+                        abit = SImage(o.images["s0"]);
+                        break;
+                    case 1:
+                        abit = SImage(o.images["s1"]);
+                        break;
+                    case 2:
+                        abit = SImage(o.images["s2"]);
+                        break;
+                    case 3:
+                        abit = SImage(o.images["s3"]);
+                        break;
+                    case 4:
+                        abit = SImage(o.images["s4"]);
+                        break;
+                    case 5:
+                        abit = SImage(o.images["s5"]);
+                        break;
+                    case 6:
+                        abit = SImage(o.images["s6"]);
+                        break;
+                    case 7:
+                        abit = SImage(o.images["s7"]);
+                        break;
+                    case 8:
+                        abit = SImage(o.images["s8"]);
+                        break;
+                    case 9:
+                        abit = SImage(o.images["s9"]);
+                        break;
+                }
+                abit.x = px;
+                abit.y = py;
+                px += abit.width;
+                o.draw(abit);
+            }
+        }
     }
     //Enable drug
     o.enableDrag = function(element, mode) {
@@ -167,10 +258,35 @@ var Game = function(images, runner) {
     }
     //Enable click
     o.enableClick = function(element, movement) {
-        canvas.addEventListener('click', function(event) {
+        function clickfunc(event) {
             if (o.isInside(element, event.offsetX, event.offsetY))
                 movement();
-        });
+        }
+        canvas.addEventListener('click', clickfunc);
+        element.clickId = Math.floor(Math.random * 1000000).toString();
+        o.clickFunctions[element.clickId] = clickfunc;
+    }
+    //Disable click
+    o.disableClick = function(element) {
+        canvas.removeEventListener('click', o.clickFunctions[element.clickId]);
+    }
+    //change cursor
+    o.enableChangeCursor = function(element, style) {
+        function changeCursor(event) {
+            if (o.isInside(element, event.offsetX, event.offsetY))
+                canvas.style.cursor = style;
+            else {
+                canvas.style.cursor = "auto";
+            }
+        }
+        canvas.addEventListener('mousemove', changeCursor);
+        element.cursorId = Math.floor(Math.random * 1000000).toString();
+        o.cursorChanger[element.cursorId] = changeCursor;
+    }
+    //Disable change cursor
+    o.disableChangeCursor = function(element) {
+        canvas.style.cursor = "auto";
+        canvas.removeEventListener('mousemove', o.cursorChanger[element.cursorId]);
     }
     //Check if a point is inside an element
     o.isInside = function(element, offsetX, offsetY) {
@@ -220,6 +336,6 @@ var Game = function(images, runner) {
     o.end = function() {
         o.running = function() {}
     }
-
+    o.runningTemp = o.running;
     return o;
 }

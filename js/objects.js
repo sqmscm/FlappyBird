@@ -31,9 +31,12 @@ var Bird = function(a, b, c, canvas) {
         y: 0,
         width: 0,
         height: 0,
-        speed: 5,
+        speedup: 10,
+        speeddown: 1,
         alive: true,
         needup: false,
+        rotate: 0,
+        isClick: false,
     }
     o.img = a;
     o.imgup = b;
@@ -43,12 +46,19 @@ var Bird = function(a, b, c, canvas) {
     o.x = canvas.width / 3 - o.width / 2;
     o.y = canvas.height / 2.5;
     o.down = function() {
-        o.y += o.speed;
+        o.y += o.speeddown;
+        if (o.speeddown < 20) {
+            o.speeddown++;
+            o.rotate += 2;
+        }
         o.img = o.imgdown;
     }
     o.up = function() {
-        o.y -= o.speed + 5;
+        if (o.y > -20)
+            o.y -= o.speedup;
         o.img = o.imgup;
+        o.speeddown = 1;
+        o.rotate = -10;
     }
 
     return o;
