@@ -1,5 +1,7 @@
 # FlappyBird
-A JavaScript Flappy Bird game on HTML `canvas`
+A JavaScript Flappy Bird game on HTML `canvas`.
+
+Use \[space\] to control.
 
 Demo: [sqmscm.github.io/FlappyBird](https://sqmscm.github.io/FlappyBird)
 
