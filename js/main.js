@@ -73,7 +73,7 @@ var main = function() {
                 if (game.detCol(pipes[i], bird)) {
                     window.over = true;
                 }
-                if (pipes[i].x + pipes[i].width < bird.x && !pipes[i].scored) {
+                if (pipes[i].x < bird.x && !pipes[i].scored) {
                     pipes[i].scored = true;
                     window.score += 0.5;
                 }
