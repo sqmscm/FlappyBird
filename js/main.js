@@ -40,6 +40,7 @@ var main = function() {
         var pipes = [];
         var pipeDistance = 120;
         var timeCounter = 0;
+        var speed = 1;
         game.render = function() {
             timeCounter++;
             if (bird.needup) {
@@ -55,7 +56,7 @@ var main = function() {
                 bird.down();
             }
             //Enter the pipe
-            if (pipeCount++ >= game.fps * 6) {
+            if (pipeCount++ >= game.fps * 6 / speed) {
                 var pipe1 = Pipe(game.images["pipe"]);
                 var y1 = Math.floor(Math.random() * (canvas.height - 50 - pipeDistance - ground.height / 2)) + 50;
                 pipe1.y = y1 - pipe1.height;
@@ -69,13 +70,14 @@ var main = function() {
             }
             for (var i = 0; i < pipes.length; i++) {
                 game.draw(pipes[i]);
-                pipes[i].move();
+                pipes[i].move(speed);
                 if (game.detCol(pipes[i], bird)) {
                     window.over = true;
                 }
                 if (pipes[i].x < bird.x && !pipes[i].scored) {
                     pipes[i].scored = true;
                     window.score += 0.5;
+                    speed += 0.05;
                 }
                 if (pipes[i].x < -pipes[i].width) {
                     pipes.slice(i, 1);
@@ -86,7 +88,7 @@ var main = function() {
             }
             //draw the ground
             game.draw(ground);
-            ground.x--;
+            ground.x -= speed;
             if (ground.x + ground.width < canvas.width)
                 ground.x = 0;
             //draw the bird

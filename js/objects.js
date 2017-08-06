@@ -17,8 +17,8 @@ var Pipe = function(a) {
     o.img = a;
     o.width = o.img.width;
     o.height = o.img.height;
-    o.move = function() {
-        o.x--;
+    o.move = function(speed) {
+        o.x -= speed;
     }
     return o;
 }
@@ -49,7 +49,7 @@ var Bird = function(a, b, c, canvas) {
         o.y += o.speeddown;
         if (o.speeddown < 20) {
             o.speeddown++;
-            o.rotate += 2;
+            o.rotate += 3;
         }
         o.img = o.imgdown;
     }
@@ -58,7 +58,7 @@ var Bird = function(a, b, c, canvas) {
             o.y -= o.speedup;
         o.img = o.imgup;
         o.speeddown = 1;
-        o.rotate = -10;
+        o.rotate = -20;
     }
 
     return o;
